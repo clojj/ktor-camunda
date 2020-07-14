@@ -10,7 +10,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate
 import org.camunda.bpm.engine.delegate.TaskListener
 import org.camunda.bpm.engine.delegate.VariableListener
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
-import org.camunda.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration
+import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration
 import org.camunda.bpm.engine.impl.persistence.StrongUuidGenerator
 import org.camunda.bpm.engine.repository.Deployment
 import org.reflections.Reflections
@@ -35,7 +35,11 @@ class CamundaKtorFeature {
 
             val configuration = Configuration().apply(configure)
 
-            val engineConfiguration = StandaloneInMemProcessEngineConfiguration()
+            val engineConfiguration = StandaloneProcessEngineConfiguration()
+            with(engineConfiguration) {
+                databaseSchemaUpdate = "create-drop"
+                jdbcUrl = "jdbc:h2:tcp://localhost:9092/default"
+            }
             engineConfiguration.isJobExecutorActivate = configuration.isJobExecutorActivate
             engineConfiguration.idGenerator = StrongUuidGenerator()
             registerDelegates(engineConfiguration)
